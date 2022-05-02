@@ -8,8 +8,16 @@
 #include <cmath>
 #include <string>
 #include <vector>
+#include <random>
+#include <chrono>
 
 using namespace std;
+
+mt19937 rng(chrono::system_clock::now().time_since_epoch().count());    
+
+int Rand(int a, int b) {
+    return uniform_int_distribution <int> (a, b) (rng);
+}
 
 const string WINDOW_TITLE = "GAME V";
 const int WINDOW_WIDTH = 1000;
@@ -21,6 +29,7 @@ SDL_Texture* texture = nullptr;
 
 bool isRunning = true, flip = false;
 string state = "normal";
+int velocity = 5;
 
 string backgroundList[] = {
     "resource/background/background_1.png",
@@ -41,6 +50,14 @@ string explosionList[] = {
 
 string characterRunList[] = {
     "resource/character/run/run_1.png",
+    "resource/character/run/run_1.png",
+    "resource/character/run/run_1.png",
+    "resource/character/run/run_1.png",
+    "resource/character/run/run_1.png",
+    "resource/character/run/run_2.png",
+    "resource/character/run/run_2.png",
+    "resource/character/run/run_2.png",
+    "resource/character/run/run_2.png",
     "resource/character/run/run_2.png",
 };
 
@@ -59,6 +76,27 @@ string characterFlyList[] = {
 string characterDownList[] = {
     "resource/character/down/down_1.png",
 };
+
+string zapperVerticalList[] = {
+    "resource/zappers/vertical/v1.png",
+    "resource/zappers/vertical/v2.png",
+    "resource/zappers/vertical/v3.png",
+    "resource/zappers/vertical/v4.png",
+};
+
+string zapperHorizontalList[] = {
+    "resource/zappers/horizontal/h1.png",
+    "resource/zappers/horizontal/h2.png",
+    "resource/zappers/horizontal/h3.png",
+    "resource/zappers/horizontal/h4.png",
+};
+
+string zapperDiagonalList[] = {
+    "resource/zappers/diagonal/d1.png",
+    "resource/zappers/diagonal/d2.png",
+    "resource/zappers/diagonal/d3.png",
+    "resource/zappers/diagonal/d4.png",
+};  
 
 class LiveTexture {
 public:
@@ -108,7 +146,7 @@ public:
     int frameSize;
     int currentFrame;
 
-}* background;
+} *background;
 
 class Character {
 public:
@@ -128,11 +166,26 @@ public:
     int w;
     int h;
 
-}* character;
+} *character;
 
 class CharacterState {
 public:
-    CharacterState() {};
+    CharacterState() {
+        const int CHARACTER_EXPLOSION_FRAME_SIZE = 10;
+        explosion = new spriteSheet(CHARACTER_EXPLOSION_FRAME_SIZE, explosionList);
+
+        const int CHARACTER_RUN_FRAME_SIZE = 10;
+        run = new spriteSheet(CHARACTER_RUN_FRAME_SIZE, characterRunList);
+
+        const int CHARACTER_JUMP_FRAME_SIZE = 4;
+        jump = new spriteSheet(CHARACTER_JUMP_FRAME_SIZE, characterJumpList);    
+
+        const int CHARACTER_FLY_FRAME_SIZE = 2;
+        fly = new spriteSheet(CHARACTER_FLY_FRAME_SIZE, characterFlyList);
+
+        const int CHARACTER_DOWN_FRAME_SIZE = 1;
+        down = new spriteSheet(CHARACTER_DOWN_FRAME_SIZE, characterDownList);
+    };
     ~CharacterState() {
         explosion->~spriteSheet();
         run->~spriteSheet();
@@ -146,7 +199,50 @@ public:
     spriteSheet* jump;
     spriteSheet* fly;
     spriteSheet* down;
-}* characterState;
+} *characterState;
+
+class Zapper {
+public:
+    Zapper(int x = 0, int y = 0, int w = 0, int h = 0, int nSize = 0, string* spriteList = nullptr) {
+        this->x = x;
+        this->y = y;
+        this->w = w;
+        this->h = h;
+        this->spriteTexture = new spriteSheet(nSize, spriteList);
+    };
+    ~Zapper() {
+        spriteTexture->~spriteSheet();
+    };
+
+    spriteSheet* spriteTexture;
+    int x;
+    int y;
+    int w;
+    int h;
+};
+
+class ZapperState {
+public:
+    ZapperState() {
+        const int ZAPPER_FRAME_SIZE = 4;
+        vertical = new Zapper(WINDOW_WIDTH - 100, Rand(0, WINDOw_HEIGHT - 200), 100, 200, ZAPPER_FRAME_SIZE, zapperVerticalList);
+        horizontal = new Zapper(500, Rand(0, WINDOw_HEIGHT - 200), 200, 100, ZAPPER_FRAME_SIZE, zapperHorizontalList);
+        diagonal = new Zapper(700, Rand(0, WINDOw_HEIGHT - 200), 200, 200, ZAPPER_FRAME_SIZE, zapperDiagonalList);
+    };
+    ~ZapperState() {
+        vertical->~Zapper();
+        horizontal->~Zapper();
+        diagonal->~Zapper();
+    };
+
+    void render(int x, int y, Zapper* typeZapper) {
+        typeZapper->spriteTexture->render(x, y, typeZapper->w, typeZapper->h);
+    }
+
+    Zapper* vertical;
+    Zapper* horizontal;
+    Zapper* diagonal;
+}* zapper;
 
 void logSDLError() {
     printf("error!... %s\n", SDL_GetError());
@@ -171,20 +267,7 @@ void init() {
     const int BACKGROUND_FRAME_SIZE = 1;
     background = new spriteSheet(BACKGROUND_FRAME_SIZE, backgroundList);
 
-    const int CHARACTER_EXPLOSION_FRAME_SIZE = 10;
-    characterState->explosion = new spriteSheet(CHARACTER_EXPLOSION_FRAME_SIZE, explosionList);
-
-    const int CHARACTER_RUN_FRAME_SIZE = 2;
-    characterState->run = new spriteSheet(CHARACTER_RUN_FRAME_SIZE, characterRunList);
-
-    const int CHARACTER_JUMP_FRAME_SIZE = 4;
-    characterState->jump = new spriteSheet(CHARACTER_JUMP_FRAME_SIZE, characterJumpList);    
-
-    const int CHARACTER_FLY_FRAME_SIZE = 2;
-    characterState->fly = new spriteSheet(CHARACTER_FLY_FRAME_SIZE, characterFlyList);
-
-    const int CHARACTER_DOWN_FRAME_SIZE = 1;
-    characterState->down = new spriteSheet(CHARACTER_DOWN_FRAME_SIZE, characterDownList);
+    zapper = new ZapperState;
 
     character->spriteTexture = characterState->run;
 }
@@ -202,6 +285,7 @@ void close() {
     background->~spriteSheet();
     character->~Character();
     characterState->~CharacterState();
+    zapper->~ZapperState();
 
     IMG_Quit();
     SDL_Quit();
@@ -244,20 +328,20 @@ void update() {
         else {
             character->spriteTexture = characterState->down;
             if (character->y < WINDOw_HEIGHT - character->h)
-                character->y += 5;
+                character->y += velocity;
         }
     }
     
     if (state == "jump") {
         character->spriteTexture = characterState->jump;
         if (character->y)
-            character->y -= 5;
+            character->y -= velocity;
     }
 
     if (state == "fly") {
         character->spriteTexture = characterState->fly;
         if (character->y)
-            character->y -= 5;
+            character->y -= velocity;
     }
 
     if (state == "explosion") 
@@ -268,13 +352,18 @@ void render() {
     SDL_RenderClear(renderer);
 
     background->render(0, 0, WINDOW_WIDTH, WINDOw_HEIGHT);
+
+    zapper->render(zapper->vertical->x, zapper->vertical->y, zapper->vertical);
+    zapper->render(zapper->horizontal->x, zapper->horizontal->y, zapper->horizontal); 
+    zapper->render(zapper->diagonal->x, zapper->diagonal->y, zapper->diagonal);
+
     character->spriteTexture->render(character->x, character->y, character->w, character->h);
 
     SDL_RenderPresent(renderer);
 }
 
 int main() {
-    const int FPS = 15;
+    const int FPS = 30;
     const int frameDelay = 1200 / FPS;
 
     Uint32 frameStart;
