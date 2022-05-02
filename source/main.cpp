@@ -12,8 +12,8 @@
 using namespace std;
 
 const string WINDOW_TITLE = "GAME V";
-const int WINDOW_WIDTH = 800;
-const int WINDOw_HEIGHT = 500;
+const int WINDOW_WIDTH = 1000;
+const int WINDOw_HEIGHT = 600;
 
 SDL_Window* window = nullptr;
 SDL_Renderer* renderer = nullptr;
@@ -21,6 +21,10 @@ SDL_Texture* texture = nullptr;
 
 bool isRunning = true, flip = false;
 string state = "normal";
+
+string backgroundList[] = {
+    "resource/background/background_1.png",
+};
 
 string explosionList[] = {
     "resource/explosion/Explosion_1.png",
@@ -49,12 +53,19 @@ string characterJumpList[] = {
 
 string characterFlyList[] = {
     "resource/character/fly/fly_1.png",
+    "resource/character/fly/fly_2.png",
+};
+
+string characterDownList[] = {
+    "resource/character/down/down_1.png",
 };
 
 class LiveTexture {
 public:
     LiveTexture() {};
-    ~LiveTexture() {};
+    ~LiveTexture() {
+        SDL_DestroyTexture(texture);
+    };
 
     bool loadFromFile(std::string path) {
         texture = IMG_LoadTexture(renderer, path.c_str());
@@ -78,7 +89,9 @@ public:
         spriteTexture = new LiveTexture;
         currentFrame = 0;
     }
-    ~spriteSheet() {};
+    ~spriteSheet() {
+        spriteTexture->~LiveTexture();
+    };
 
     void render(int x, int y, int w, int h) {
         spriteTexture->render(x, y, w, h, spriteList[currentFrame]);
@@ -95,7 +108,7 @@ public:
     int frameSize;
     int currentFrame;
 
-};
+}* background;
 
 class Character {
 public:
@@ -105,7 +118,9 @@ public:
         this->w = w;
         this->h = h;
     };
-    ~Character() {};
+    ~Character() {
+        spriteTexture->~spriteSheet();
+    };
 
     spriteSheet* spriteTexture;
     int x;
@@ -118,24 +133,20 @@ public:
 class CharacterState {
 public:
     CharacterState() {};
-    ~CharacterState() {};
+    ~CharacterState() {
+        explosion->~spriteSheet();
+        run->~spriteSheet();
+        jump->~spriteSheet();
+        fly->~spriteSheet();
+        down->~spriteSheet();
+    };
 
     spriteSheet* explosion;
     spriteSheet* run;
     spriteSheet* jump;
     spriteSheet* fly;
+    spriteSheet* down;
 }* characterState;
-
-class Background {
-public: 
-    Background() {};
-    ~Background() {};
-
-    void render() {
-        
-    }
-
-}* background;
 
 void logSDLError() {
     printf("error!... %s\n", SDL_GetError());
@@ -153,9 +164,12 @@ void init() {
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (renderer == nullptr) logSDLError();
 
-    character = new Character(100, 400, 100, 100);
+    character = new Character(100, WINDOw_HEIGHT - 100, 100, 100);
 
     characterState = new CharacterState;
+
+    const int BACKGROUND_FRAME_SIZE = 1;
+    background = new spriteSheet(BACKGROUND_FRAME_SIZE, backgroundList);
 
     const int CHARACTER_EXPLOSION_FRAME_SIZE = 10;
     characterState->explosion = new spriteSheet(CHARACTER_EXPLOSION_FRAME_SIZE, explosionList);
@@ -166,8 +180,11 @@ void init() {
     const int CHARACTER_JUMP_FRAME_SIZE = 4;
     characterState->jump = new spriteSheet(CHARACTER_JUMP_FRAME_SIZE, characterJumpList);    
 
-    const int CHARACTER_FLY_FRAME_SIZE = 1;
+    const int CHARACTER_FLY_FRAME_SIZE = 2;
     characterState->fly = new spriteSheet(CHARACTER_FLY_FRAME_SIZE, characterFlyList);
+
+    const int CHARACTER_DOWN_FRAME_SIZE = 1;
+    characterState->down = new spriteSheet(CHARACTER_DOWN_FRAME_SIZE, characterDownList);
 
     character->spriteTexture = characterState->run;
 }
@@ -182,8 +199,9 @@ void close() {
     SDL_DestroyTexture(texture);
     texture = nullptr;
 
-    delete background;
-    background = nullptr;
+    background->~spriteSheet();
+    character->~Character();
+    characterState->~CharacterState();
 
     IMG_Quit();
     SDL_Quit();
@@ -224,6 +242,7 @@ void update() {
         if (character->y == WINDOw_HEIGHT - character->h)
             character->spriteTexture = characterState->run;
         else {
+            character->spriteTexture = characterState->down;
             if (character->y < WINDOw_HEIGHT - character->h)
                 character->y += 5;
         }
@@ -248,6 +267,7 @@ void update() {
 void render() {
     SDL_RenderClear(renderer);
 
+    background->render(0, 0, WINDOW_WIDTH, WINDOw_HEIGHT);
     character->spriteTexture->render(character->x, character->y, character->w, character->h);
 
     SDL_RenderPresent(renderer);
