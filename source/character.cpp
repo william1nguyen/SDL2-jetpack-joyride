@@ -1,4 +1,5 @@
 #include "../include/character.hpp"
+#include "../include/game.hpp"
 
 const int character_running_frame_size = 4;
 string character_running_path[] = {
@@ -27,7 +28,7 @@ string character_landing_path[] = {
     "resource/character/landing/landing_1.png",
 };
 
-const int ground = Game::WINDOW_HEIGHT;
+const int ground = Game::WINDOW_HEIGHT - 20;
 
 Character::Character() {
     path = new string[frame_size];
@@ -35,15 +36,23 @@ Character::Character() {
     h = 50;
     x = Game::WINDOW_WIDTH / 3;
     y = ground - h;
-    velocity = 5;
 };
 Character::~Character() {
-    delete path;
-    path = NULL;
-
     SDL_DestroyTexture(texture);
-    texture = NULL;
 };
+
+void Character::update() {
+    if (state == "jumping") {
+        jumping();
+    }  else if (state == "flying") {
+        flying();
+    } else {
+        if (on_ground()) 
+            running();
+        else  
+            landing();
+    }
+}
 
 void Character::render() {
     render_quad = {x, y, w, h};
@@ -53,46 +62,43 @@ void Character::render() {
     ++ current_frame;
     if (current_frame == frame_size) {
         current_frame = 0;
-        if (on_ground())
-            state = "running";
-        else 
-            state = "landing";
+        state = "normal";
     }
 }
 
 bool Character::on_ground() { return y == ground - h; }
 
 void Character::running() {
-    if (state != "running") return;
     frame_size = character_running_frame_size;
-    path = character_running_path;
-    current_frame = 0;
-    state = "normal";
+    if (path != character_running_path) {
+        path = character_running_path;
+        current_frame = 0;
+    }
 }
 
 void Character::jumping(){
-    if (state != "jumping") return;
-    y = (y - velocity) ? y - velocity : y;
+    y = (y - Game::velocity) ? y - Game::velocity : y;
     frame_size = character_jumping_frame_size;
-    path = character_jumping_path;
-    current_frame = 0;
-    state = "normal";
+    if (path != character_jumping_path) {
+        path = character_jumping_path;
+        current_frame = 0;
+    }
 }
 
 void Character::flying() {
-    if (state != "flying") return;
-    y = (y - velocity) ? y - velocity : y;
+    y = (y - Game::velocity) ? y - Game::velocity : y;
     frame_size = character_flying_frame_size;
-    path = character_flying_path;
-    current_frame = 0;
-    state = "normal";
+    if (path != character_flying_path) {
+        path = character_flying_path;
+        current_frame = 0;
+    }
 }
 
 void Character::landing() {
-    if (state != "landing") return;
-    y = (!on_ground()) ? y + velocity : y;
+    y = (!on_ground()) ? y + Game::velocity : y;
     frame_size = character_landing_frame_size;
-    path = character_landing_path;
-    current_frame = 0;
-    state = "normal";
+    if (path != character_landing_path) {
+        path = character_landing_path;
+        current_frame = 0;
+    }
 }

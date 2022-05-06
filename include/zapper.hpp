@@ -1,23 +1,17 @@
 #include "library.hpp"
 
-class Character {
+class Zapper {
 public:
     string* path;
     SDL_Rect render_quad;
 
     int frame_size = 0;
-    string state = "normal";
 
-    Character();
-    ~Character();
+    Zapper(int id = 0);
+    ~Zapper();
 
     void update();
     void render();
-    bool on_ground();
-    void running();
-    void jumping();
-    void flying();
-    void landing();
 
 private:
     SDL_Texture* texture;
@@ -26,4 +20,5 @@ private:
     int y;
     int w;
     int h;
+    int id;
 };

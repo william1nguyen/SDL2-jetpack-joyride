@@ -1,10 +1,17 @@
+#include "../include/game.hpp"
 #include "../include/character.hpp"
+#include "../include/background.hpp"
+#include "../include/zapper.hpp"
 
 SDL_Renderer* Game::renderer;
 const int Game::WINDOW_HEIGHT;
 const int Game::WINDOW_WIDTH;
 
+int Game::velocity;
+
+Background* background;
 Character* character;
+Zapper* zapper;
 
 void Game::init() {
     SDL_Init(SDL_INIT_EVERYTHING);
@@ -14,12 +21,21 @@ void Game::init() {
     );
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+    velocity = 5;
+
+    background = new Background;
     character = new Character;
+    
+    zapper = new Zapper(1);
 }
 
 void Game::close() {
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
+    delete background;
+    delete character;
+    delete zapper;
     IMG_Quit();
     SDL_Quit();
 }
@@ -38,13 +54,12 @@ void Game::handle_event() {
                         game_over = true;
                         break;
                     case SDLK_SPACE:
-                        if (character->on_ground())
+                        if (character->on_ground()) 
                             character->state = "jumping";
                         else 
                             character->state = "flying";
                         break;
                 }
-
                 break;
         }
     }
@@ -53,23 +68,16 @@ void Game::handle_event() {
 bool Game::is_running() { return game_over == false; }
 
 void Game::update() {
-    if (character->state == "running")
-        character->running();
-
-    if (character->state == "jumping")
-        character->jumping();
-    
-    if (character->state == "flying")
-        character->flying();
-    
-    if (character->state == "landing")
-        character->landing();
-}
+    character->update();
+    zapper->update();
+}   
 
 void Game::render() {
     SDL_RenderClear(renderer);
-    
+
+    background->render();   
     character->render();
+    zapper->render();
 
     SDL_RenderPresent(renderer);
 }

@@ -1,1 +1,2 @@
-object/main.o: source/main.cpp source/../include/game.hpp
+object/main.o: source/main.cpp source/../include/game.hpp \
+ source/../include/library.hpp
