@@ -3,7 +3,7 @@
 class Game {
 public:
     const string WINDOW_TITLE = "GAME V";
-    static const int WINDOW_WIDTH = 700;
+    static const int WINDOW_WIDTH = 800;
     static const int WINDOW_HEIGHT = 400;
 
     static SDL_Renderer* renderer;

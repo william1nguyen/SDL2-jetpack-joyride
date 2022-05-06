@@ -3,7 +3,7 @@
 class Background {
 public:
     string* path;
-    SDL_Rect render_src_quad;
+    SDL_Rect render_quad;
 
     int frame_size = 0;
 

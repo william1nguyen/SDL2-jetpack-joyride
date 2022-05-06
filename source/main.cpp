@@ -3,7 +3,7 @@
 Game* game;
 
 int main() {
-    const int FPS = 30;
+    const int FPS = 60;
     const int frameDelay = 1200 / FPS;
 
     Uint32 frameStart;
