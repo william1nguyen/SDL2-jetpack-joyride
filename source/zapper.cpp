@@ -25,7 +25,9 @@ string zapper_vertical_path[] = {
 
 string zapper_type[] = {"", "diagonal", "horizontal", "vertical"};
 string* zapper_path[] = {NULL, zapper_diagonal_path, zapper_horizontal_path, zapper_vertical_path};
-pair <int, int> zapper_w_h[] = {{0, 0}, {150, 150}, {240, 50}, {50, 240}};
+pair <int, int> zapper_w_h[] = {
+    {0, 0}, {150, 150}, {180, 60}, {60, 180}
+};
 
 mt19937 rng(chrono::system_clock::now().time_since_epoch().count());
 
@@ -49,13 +51,13 @@ Zapper::~Zapper() {
 void Zapper::update() {
     x = x - Game::velocity;
     if (x < -w) {
-        x = Game::WINDOW_WIDTH - w + id*w;
-        y = Rand(h, Game::WINDOW_HEIGHT - 2*h);
-
         id = Rand(1, 3);
         path = zapper_path[id];
         w = zapper_w_h[id].first;
         h = zapper_w_h[id].second;
+
+        x = Game::WINDOW_WIDTH - w + id*w;
+        y = Rand(0, Game::WINDOW_HEIGHT - h);
     }
 }   
 

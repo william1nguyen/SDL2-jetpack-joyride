@@ -14,6 +14,8 @@ Character* character;
 Zapper* zapper;
 
 void Game::init() {
+    srand(time(0));
+
     SDL_Init(SDL_INIT_EVERYTHING);
     window = SDL_CreateWindow(
         WINDOW_TITLE.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -22,12 +24,12 @@ void Game::init() {
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    velocity = 5;
+    velocity = 8;
 
     background = new Background;
     character = new Character;
     
-    zapper = new Zapper(1);
+    zapper = new Zapper(rand() % 3 + 1);
 }
 
 void Game::close() {
@@ -75,7 +77,8 @@ void Game::update() {
 void Game::render() {
     SDL_RenderClear(renderer);
 
-    background->render();   
+    background->render();
+
     character->render();
     zapper->render();
 

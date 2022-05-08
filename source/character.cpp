@@ -32,8 +32,8 @@ const int ground = Game::WINDOW_HEIGHT - 20;
 
 Character::Character() {
     path = new string[frame_size];
-    w = 100;
-    h = 100;
+    w = 70;
+    h = 70;
     x = Game::WINDOW_WIDTH / 3;
     y = ground - h;
 };

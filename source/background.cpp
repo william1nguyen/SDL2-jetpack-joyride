@@ -1,39 +1,46 @@
 #include "../include/background.hpp"
 #include "../include/game.hpp"
 
-const int background_frame_size = 3;
+const int background_frame_size = 13;
 string background_path[] = {
-    "resource/background/Sector_0.png",
-    "resource/background/Sector_1.png",
-    "resource/background/Sector_2.png",
+    "resource/background/0.png",
+    "resource/background/1.png",
+    "resource/background/2.png",
+    "resource/background/3.png",
+    "resource/background/4.png",
+    "resource/background/5.png",
+    "resource/background/6.png",
+    "resource/background/7.png",
+    "resource/background/8.png",
+    "resource/background/9.png",
+    "resource/background/10.png",
+    "resource/background/11.png",
+    "resource/background/12.png",
 };
 
 const int background_width_pixel = 2048;
+const int background_render_width = background_width_pixel / 4;
 const int background_height_pixel = 461;
 
 Background::Background() {
     frame_size = background_frame_size;
-
-    render_quad = {
-        0, 0, background_width_pixel/4, background_height_pixel
-    };
-
-    path = new string[frame_size];
-    path = background_path;
+    
 };
 Background::~Background() {
-    SDL_DestroyTexture(texture);
+    SDL_DestroyTexture(texture_left);
+    SDL_DestroyTexture(texture_right);
 };
 
-void Background::render() {
-    texture = IMG_LoadTexture(Game::renderer, path[1].c_str());
-    SDL_RenderCopy(Game::renderer, texture, &render_quad, NULL);
+void Background::update() {
     
-    ++ current_frame;
-    if (current_frame == frame_size) 
-        current_frame = 0;
-    ++ render_quad.x;
-    if (render_quad.x == background_width_pixel)
-        render_quad.x = 0;
+}
 
+void Background::render() { 
+    texture_left = IMG_LoadTexture(Game::renderer, background_path[current_frame].c_str());
+    SDL_RenderCopy(Game::renderer, texture_left, &render_quad_left, &dest_rect_left);
+    
+    texture_right = IMG_LoadTexture(Game::renderer, background_path[(current_frame + 1) % frame_size].c_str());
+    SDL_RenderCopy(Game::renderer, texture_right, &render_quad_right, &dest_rect_right);
+    
+    update();
 }
