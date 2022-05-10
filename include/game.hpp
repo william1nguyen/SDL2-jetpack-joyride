@@ -1,4 +1,5 @@
 #include "library.hpp"
+#include <time.h>
 
 class Game {
 public:
@@ -18,5 +19,6 @@ public:
 
 private:
     bool game_over = false;
+    int timer = 0;
     SDL_Window* window;
 };

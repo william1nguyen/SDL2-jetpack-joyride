@@ -1,11 +1,11 @@
 #include "../include/character.hpp"
 #include "../include/game.hpp"
 
-const int character_running_frame_size = 4;
+const int character_running_frame_size = 2;
 string character_running_path[] = {
     "resource/character/running/running_1.png",
-    "resource/character/running/running_1.png",
-    "resource/character/running/running_2.png",
+    //"resource/character/running/running_1.png",
+    //"resource/character/running/running_2.png",
     "resource/character/running/running_2.png",
 };
 
@@ -56,6 +56,8 @@ void Character::update() {
 
 void Character::render() {
     render_quad = {x, y, w, h};
+    if(texture != nullptr) 
+        texture = nullptr;
     texture = IMG_LoadTexture(Game::renderer, path[current_frame].c_str());
     SDL_RenderCopy(Game::renderer, texture, NULL, &render_quad);
     
@@ -77,7 +79,7 @@ void Character::running() {
 }
 
 void Character::jumping(){
-    y = (y - Game::velocity) ? y - Game::velocity : y;
+    y = max(y - Game::velocity, 0);
     frame_size = character_jumping_frame_size;
     if (path != character_jumping_path) {
         path = character_jumping_path;
@@ -86,7 +88,7 @@ void Character::jumping(){
 }
 
 void Character::flying() {
-    y = (y - Game::velocity) ? y - Game::velocity : y;
+    y = max(y - Game::velocity, 0);
     frame_size = character_flying_frame_size;
     if (path != character_flying_path) {
         path = character_flying_path;
@@ -95,7 +97,7 @@ void Character::flying() {
 }
 
 void Character::landing() {
-    y = (!on_ground()) ? y + Game::velocity : y;
+    y = (!on_ground()) ? y + Game::velocity / 2 : y;
     frame_size = character_landing_frame_size;
     if (path != character_landing_path) {
         path = character_landing_path;

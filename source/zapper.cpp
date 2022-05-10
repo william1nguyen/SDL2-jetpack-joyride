@@ -46,6 +46,7 @@ Zapper::Zapper(int id) {
 }
 Zapper::~Zapper() {
     SDL_DestroyTexture(texture);
+    texture = NULL;
 }
 
 void Zapper::update() {
@@ -66,6 +67,9 @@ void Zapper::render() {
     texture = IMG_LoadTexture(Game::renderer, path[current_frame].c_str());
     SDL_RenderCopy(Game::renderer, texture, NULL, &render_quad);
     
+    SDL_DestroyTexture(texture);
+    texture = NULL;
+
     ++ current_frame;
     if (current_frame == frame_size) 
         current_frame = 0;

@@ -1,6 +1,7 @@
 #include "../include/game.hpp"
 #include "../include/character.hpp"
 #include "../include/background.hpp"
+#include "../include/missles.hpp"
 #include "../include/zapper.hpp"
 
 SDL_Renderer* Game::renderer;
@@ -11,6 +12,7 @@ int Game::velocity;
 
 Background* background;
 Character* character;
+Missles* missles;
 Zapper* zapper;
 
 void Game::init() {
@@ -24,11 +26,11 @@ void Game::init() {
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    velocity = 8;
+    velocity = 10;
 
     background = new Background;
     character = new Character;
-    
+    missles = new Missles();
     zapper = new Zapper(rand() % 3 + 1);
 }
 
@@ -36,8 +38,13 @@ void Game::close() {
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
     delete background;
+    background = NULL;
     delete character;
+    character = NULL;
     delete zapper;
+    zapper = NULL;
+    delete missles;
+    missles = NULL;
     IMG_Quit();
     SDL_Quit();
 }
@@ -70,7 +77,9 @@ void Game::handle_event() {
 bool Game::is_running() { return game_over == false; }
 
 void Game::update() {
+    ++ timer;
     character->update();
+    missles->update();
     zapper->update();
 }   
 
@@ -81,6 +90,7 @@ void Game::render() {
 
     character->render();
     zapper->render();
+    missles->render();
 
     SDL_RenderPresent(renderer);
 }
