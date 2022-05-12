@@ -1,18 +1,18 @@
 #include "library.hpp"
 
-struct Missles {
+struct Laser {
     SDL_Texture* texture;
     int current_frame = 0;
     int x;
     int y;
-    int w;
+    int w; 
     int h;
-    int id;
 
     int frame_size = 0;
+    string state = "";
 
-    Missles();
-    ~Missles();
+    Laser();
+    ~Laser();
 
     void update();
     void render();

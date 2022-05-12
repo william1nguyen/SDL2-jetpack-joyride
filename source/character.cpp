@@ -58,6 +58,7 @@ void Character::render() {
     render_quad = {x, y, w, h};
     if(texture != nullptr) 
         texture = nullptr;
+        
     texture = IMG_LoadTexture(Game::renderer, path[current_frame].c_str());
     SDL_RenderCopy(Game::renderer, texture, NULL, &render_quad);
     

@@ -29,12 +29,6 @@ pair <int, int> zapper_w_h[] = {
     {0, 0}, {150, 150}, {180, 60}, {60, 180}
 };
 
-mt19937 rng(chrono::system_clock::now().time_since_epoch().count());
-
-int Rand(int a, int b) {
-    return uniform_int_distribution <int> (a, b) (rng);
-}
-
 Zapper::Zapper(int id) {
     frame_size = zapper_frame_size;
     this->id = id;
@@ -42,7 +36,7 @@ Zapper::Zapper(int id) {
     w = zapper_w_h[id].first;
     h = zapper_w_h[id].second;
     x = Game::WINDOW_WIDTH - w + id * w;
-    y = Rand(0, Game::WINDOW_HEIGHT - 2 * h);
+    y = Game::Rand(0, Game::WINDOW_HEIGHT - 2 * h);
 }
 Zapper::~Zapper() {
     SDL_DestroyTexture(texture);
@@ -52,18 +46,18 @@ Zapper::~Zapper() {
 void Zapper::update() {
     x = x - Game::velocity;
     if (x < -w) {
-        id = Rand(1, 3);
+        id = Game::Rand(1, 3);
         path = zapper_path[id];
         w = zapper_w_h[id].first;
         h = zapper_w_h[id].second;
 
         x = Game::WINDOW_WIDTH - w + id*w;
-        y = Rand(0, Game::WINDOW_HEIGHT - h);
+        y = Game::Rand(0, Game::WINDOW_HEIGHT - h);
     }
 }   
 
 void Zapper::render() {
-    render_quad = {x, y, w, h};
+    SDL_Rect render_quad = {x, y, w, h};
     texture = IMG_LoadTexture(Game::renderer, path[current_frame].c_str());
     SDL_RenderCopy(Game::renderer, texture, NULL, &render_quad);
     

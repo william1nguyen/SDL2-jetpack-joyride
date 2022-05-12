@@ -51,6 +51,7 @@ void Missles::update() {
     x -= Game::velocity;
     if (x < -w) {
         x = Game::WINDOW_WIDTH - w;
+        y = Game::Rand(0, Game::WINDOW_HEIGHT - h);
         current_frame = 0;
     }
 }
