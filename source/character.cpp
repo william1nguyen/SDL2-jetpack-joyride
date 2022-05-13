@@ -1,11 +1,11 @@
 #include "../include/character.hpp"
 #include "../include/game.hpp"
 
-const int character_running_frame_size = 2;
+const int character_running_frame_size = 4;
 string character_running_path[] = {
     "resource/character/running/running_1.png",
-    //"resource/character/running/running_1.png",
-    //"resource/character/running/running_2.png",
+    "resource/character/running/running_1.png",
+    "resource/character/running/running_2.png",
     "resource/character/running/running_2.png",
 };
 
@@ -61,7 +61,7 @@ void Character::render() {
         
     texture = IMG_LoadTexture(Game::renderer, path[current_frame].c_str());
     SDL_RenderCopy(Game::renderer, texture, NULL, &render_quad);
-    
+
     ++ current_frame;
     if (current_frame == frame_size) {
         current_frame = 0;

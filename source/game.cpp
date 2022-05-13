@@ -83,6 +83,11 @@ void Game::close() {
 
     delete laser;
     laser = NULL;
+
+    delete coin_base;
+    coin_base = NULL;
+
+    delete [] coin;
         
     IMG_Quit();
     SDL_Quit();
@@ -114,7 +119,7 @@ void Game::handle_event() {
 }
 
 bool Game::is_running() { 
-    if (laser->y < character->y && character->y < laser->y + laser->h - 20 && laser->state == "beaming") {
+    /*if (laser->y < character->y && character->y < laser->y + laser->h - 20 && laser->state == "beaming") {
         Game::game_over = true;
     }
 
@@ -122,7 +127,7 @@ bool Game::is_running() {
         if (max(character->y, missles->y) < min(character->y + character->h, missles->y + missles->h) - 15)
             Game::game_over = true;
 
-    /*if (max(character->x, zapper->x) < min(character->x + character->w, zapper->x + zapper->w) - 30)
+    if (max(character->x, zapper->x) < min(character->x + character->w, zapper->x + zapper->w) - 30)
         if (max(character->y, zapper->y) < min(character->y + character->h, zapper->y + zapper->h) - 30)
             Game::game_over = true;*/
 
@@ -137,7 +142,7 @@ void Game::update() {
     zapper->update();
     coin_base->update();
 
-    for (int i = 0; i < number_of_coin_on_row; ++i)
+    /*for (int i = 0; i < number_of_coin_on_row; ++i)
         for (int j = 0; j < number_of_coin_on_line; ++j) {
             if (coin_base->x == Game::WINDOW_WIDTH)
                 coin[i][j].coin_exist = true;
@@ -148,22 +153,23 @@ void Game::update() {
             if (max(character->x, coin[i][j].x) < min(character->x + character->w, coin[i][j].x + coin[i][j].w))
                 if (max(character->y, coin[i][j].y) < min(character->y + character->h, coin[i][j].y + coin[i][j].h))
                     coin[i][j].coin_exist = false;
-        }
+        }*/
 }      
 
 void Game::render() {
     SDL_RenderClear(renderer);
 
     background->render();
-    for (int i = 0; i < number_of_coin_on_row; ++i)
-        for (int j = 0; j < number_of_coin_on_line; ++j)
-            coin[i][j].render();
+    
 
-    //zapper->render();
+    character->render();
+    zapper->render();
     missles->render();
     laser->render();
     
-    character->render();
-    
-    SDL_RenderPresent(renderer);
+    /*for (int i = 0; i < number_of_coin_on_row; ++i)
+        for (int j = 0; j < number_of_coin_on_line; ++j)
+            coin[i][j].render();*/
+
+    SDL_RenderPresent(Game::renderer);
 }

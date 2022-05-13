@@ -18,52 +18,41 @@ string background_path[] = {
     "resource/background/12.png",
 };
 
-const int background_width_pixel = 2048;
-const int background_render_width = background_width_pixel / 4;
-const int background_height_pixel = 461;
+const int background_render_width = Game::WINDOW_WIDTH / 2;
 
 Background::Background() {
+    texture = NULL;
+    
     frame_size = background_frame_size;
+    current_frame = 0;
 
-    render_quad_left = {
-        0, 0, background_render_width, background_height_pixel
-    };
-
-    dest_rect_left = {
-        0, 0, Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT
-    };
-
-    render_quad_right = {
-        0, 0, background_render_width, background_height_pixel
-    };
-
-    dest_rect_right = {
-        Game::WINDOW_WIDTH, 0, 0, Game::WINDOW_HEIGHT 
+    render_quad = {
+        0, 0, background_render_width, Game::WINDOW_HEIGHT
     };
 };
 Background::~Background() {
-    SDL_DestroyTexture(texture_left);
-    texture_left = NULL;
-    SDL_DestroyTexture(texture_right);
-    texture_right = NULL;
+    SDL_DestroyTexture(texture);
+    texture = NULL;
 };
 
 void Background::update() {
-    
+    render_quad.x += Game::velocity;
+    if (render_quad.x >= Game::WINDOW_WIDTH / 2) {
+        render_quad.x %= Game::WINDOW_WIDTH / 2;
+        current_frame = (current_frame + 1) % frame_size;
+    }
 }
 
 void Background::render() { 
-    texture_left = IMG_LoadTexture(Game::renderer, background_path[current_frame].c_str());
-    SDL_RenderCopy(Game::renderer, texture_left, &render_quad_left, &dest_rect_left);
-    
-    SDL_DestroyTexture(texture_left);
-    texture_left = NULL;
+    SDL_Rect render_space = {
+        0, 0, Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT
+    }; 
 
-    //texture_right = IMG_LoadTexture(Game::renderer, background_path[(current_frame + 1) % frame_size].c_str());
-    //SDL_RenderCopy(Game::renderer, texture_right, &render_quad_right, &dest_rect_right);
-    
-    //SDL_DestroyTexture(texture_right);
-    //texture_right = NULL;
+    texture = IMG_LoadTexture(Game::renderer, background_path[current_frame].c_str());
+    SDL_RenderCopy(Game::renderer, texture, &render_quad, &render_space);
+
+    SDL_DestroyTexture(texture);
+    texture = NULL;
 
     update();
 }
