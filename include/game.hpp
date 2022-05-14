@@ -12,7 +12,13 @@ struct Game {
     static int velocity;
     static int timer;
 
+    static int highscore;
+    static int total_coin;
+    int coin_earn_this_game;
+    int score_this_game;
+
     bool game_over = false;
+    bool pause = false;
 
     static int Rand(int a, int b);
 

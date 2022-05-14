@@ -18,7 +18,7 @@ string background_path[] = {
     "resource/background/12.png",
 };
 
-const int background_render_width = Game::WINDOW_WIDTH / 2;
+const int background_render_width = Game::WINDOW_WIDTH / 8;
 
 Background::Background() {
     texture = NULL;
@@ -36,7 +36,7 @@ Background::~Background() {
 };
 
 void Background::update() {
-    render_quad.x += Game::velocity;
+    render_quad.x += Game::velocity / 5;
     if (render_quad.x >= Game::WINDOW_WIDTH / 2) {
         render_quad.x %= Game::WINDOW_WIDTH / 2;
         current_frame = (current_frame + 1) % frame_size;

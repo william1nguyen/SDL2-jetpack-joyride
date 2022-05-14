@@ -1,4 +1,5 @@
 #include "../include/game.hpp"
+#include <fstream>
 
 Game* game;
 
@@ -25,6 +26,15 @@ int main() {
         if (frameDelay > frameTime)
             SDL_Delay(frameDelay - frameTime);
     }
-    
+
+    ofstream out;
+    out.open("highscore.txt");
+    out << Game::highscore << endl;
+    out.close();
+
+    out.open("coin.txt");
+    out << Game::total_coin << endl;
+    out.close();
+
     game->close();
 }
