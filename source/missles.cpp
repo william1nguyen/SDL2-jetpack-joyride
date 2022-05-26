@@ -35,6 +35,7 @@ Missles::Missles() {
     h = 50;
     x = Game::WINDOW_WIDTH - w;
     y = 0;
+    render_quad = {x, y, w, h};
 }
 Missles::~Missles() {
     SDL_DestroyTexture(texture);
@@ -57,7 +58,7 @@ void Missles::update() {
 }
 
 void Missles::render() {
-    SDL_Rect render_quad = {x, y, w, h};
+    render_quad = {x, y, w, h};
     texture = IMG_LoadTexture(Game::renderer, missles_path[current_frame].c_str());
     SDL_RenderCopy(Game::renderer, texture, NULL, &render_quad);
 

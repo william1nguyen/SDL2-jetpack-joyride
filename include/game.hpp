@@ -14,8 +14,8 @@ struct Game {
 
     static int highscore;
     static int total_coin;
-    int coin_earn_this_game;
-    int score_this_game;
+    static int coin_earn_this_game;
+    static int score_this_game;
 
     bool game_over = false;
     bool pause = false;
@@ -28,6 +28,4 @@ struct Game {
     void update();
     void render();
     void close();
-
-    
 };

@@ -22,7 +22,7 @@ const int background_render_width = Game::WINDOW_WIDTH / 8;
 
 Background::Background() {
     texture = NULL;
-    
+
     frame_size = background_frame_size;
     current_frame = 0;
 
@@ -36,17 +36,17 @@ Background::~Background() {
 };
 
 void Background::update() {
-    render_quad.x += Game::velocity / 5;
+    render_quad.x += 2;
     if (render_quad.x >= Game::WINDOW_WIDTH / 2) {
         render_quad.x %= Game::WINDOW_WIDTH / 2;
         current_frame = (current_frame + 1) % frame_size;
     }
 }
 
-void Background::render() { 
+void Background::render() {
     SDL_Rect render_space = {
         0, 0, Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT
-    }; 
+    };
 
     texture = IMG_LoadTexture(Game::renderer, background_path[current_frame].c_str());
     SDL_RenderCopy(Game::renderer, texture, &render_quad, &render_space);

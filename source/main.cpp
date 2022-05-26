@@ -3,7 +3,7 @@
 
 Game* game;
 
-int main() {
+int main(int argc, char* argv[]) {
     const int FPS = 60;
     const int frameDelay = 1000 / FPS;
 
@@ -20,21 +20,11 @@ int main() {
         game->handle_event();
         game->update();
         game->render();
-        
+
 
         frameTime = SDL_GetTicks() - frameStart;
         if (frameDelay > frameTime)
             SDL_Delay(frameDelay - frameTime);
     }
-
-    ofstream out;
-    out.open("highscore.txt");
-    out << Game::highscore << endl;
-    out.close();
-
-    out.open("coin.txt");
-    out << Game::total_coin << endl;
-    out.close();
-
     game->close();
 }

@@ -85,10 +85,11 @@ Laser::Laser() {
     x = 0;
     y = 0;
     w = Game::WINDOW_WIDTH;
-    h = 100;
+    h = 50;
+    render_quad = {x, y, w, h};
 }
 
-Laser::~Laser() {   
+Laser::~Laser() {
     SDL_DestroyTexture(texture);
     texture = NULL;
 }
@@ -98,7 +99,7 @@ void Laser::update() {
 }
 
 void Laser::render() {
-    SDL_Rect render_quad = {x, y, w, h};
+    render_quad = {x, y, w, h};
 
     texture = IMG_LoadTexture(Game::renderer, laser_path[current_frame].c_str());
     SDL_RenderCopy(Game::renderer, texture, NULL, &render_quad);
@@ -112,8 +113,8 @@ void Laser::render() {
         y = Game::Rand(0, Game::WINDOW_HEIGHT - h);
     }
 
-    if (current_frame <= laser_frame_warning_size) 
+    if (current_frame <= laser_frame_warning_size)
         state = "warning";
-    else 
+    else
         state = "beaming";
 }

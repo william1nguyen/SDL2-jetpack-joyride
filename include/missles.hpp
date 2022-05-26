@@ -2,6 +2,7 @@
 
 struct Missles {
     SDL_Texture* texture;
+    SDL_Rect render_quad;
     int current_frame = 0;
     int x;
     int y;

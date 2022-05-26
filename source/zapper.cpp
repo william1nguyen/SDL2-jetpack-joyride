@@ -37,6 +37,7 @@ Zapper::Zapper(int id) {
     h = zapper_w_h[id].second;
     x = Game::WINDOW_WIDTH - w + id * w;
     y = Game::Rand(0, Game::WINDOW_HEIGHT - 2 * h);
+    render_quad = {x, y, w, h};
 }
 Zapper::~Zapper() {
     SDL_DestroyTexture(texture);
@@ -54,7 +55,7 @@ void Zapper::update() {
         x = Game::WINDOW_WIDTH - w + id*w;
         y = Game::Rand(0, Game::WINDOW_HEIGHT - h);
     }
-}   
+}
 
 void Zapper::render() {
     SDL_Rect render_quad = {x, y, w, h};
@@ -65,6 +66,6 @@ void Zapper::render() {
     texture = NULL;
 
     ++ current_frame;
-    if (current_frame == frame_size) 
+    if (current_frame == frame_size)
         current_frame = 0;
 }

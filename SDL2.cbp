@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="SDL2" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/SDL2" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/SDL2" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="SDL2.dll" />
+		<Unit filename="SDL2_image.dll" />
+		<Unit filename="coin.txt" />
+		<Unit filename="highscore.txt" />
+		<Unit filename="include/SBDL.hpp" />
+		<Unit filename="include/background.hpp" />
+		<Unit filename="include/character.hpp" />
+		<Unit filename="include/coin.hpp" />
+		<Unit filename="include/game.hpp" />
+		<Unit filename="include/laser.hpp" />
+		<Unit filename="include/library.hpp" />
+		<Unit filename="include/menu.hpp" />
+		<Unit filename="include/missles.hpp" />
+		<Unit filename="include/zapper.hpp" />
+		<Unit filename="libjpeg-9.dll" />
+		<Unit filename="libpng16-16.dll" />
+		<Unit filename="libtiff-5.dll" />
+		<Unit filename="libwebp-7.dll" />
+		<Unit filename="resource/background/0.png" />
+		<Unit filename="resource/background/1.png" />
+		<Unit filename="resource/background/10.png" />
+		<Unit filename="resource/background/11.png" />
+		<Unit filename="resource/background/12.png" />
+		<Unit filename="resource/background/2.png" />
+		<Unit filename="resource/background/3.png" />
+		<Unit filename="resource/background/4.png" />
+		<Unit filename="resource/background/5.png" />
+		<Unit filename="resource/background/6.png" />
+		<Unit filename="resource/background/7.png" />
+		<Unit filename="resource/background/8.png" />
+		<Unit filename="resource/background/9.png" />
+		<Unit filename="resource/character/flying/flying_1.png" />
+		<Unit filename="resource/character/flying/flying_2.png" />
+		<Unit filename="resource/character/jumping/jumping_1.png" />
+		<Unit filename="resource/character/jumping/jumping_2.png" />
+		<Unit filename="resource/character/jumping/jumping_3.png" />
+		<Unit filename="resource/character/jumping/jumping_4.png" />
+		<Unit filename="resource/character/landing/landing_1.png" />
+		<Unit filename="resource/character/running/running_1.png" />
+		<Unit filename="resource/character/running/running_2.png" />
+		<Unit filename="resource/coin/1.1.png" />
+		<Unit filename="resource/coin/1.png" />
+		<Unit filename="resource/coin/2.1.png" />
+		<Unit filename="resource/coin/2.png" />
+		<Unit filename="resource/coin/3.1.png" />
+		<Unit filename="resource/coin/3.png" />
+		<Unit filename="resource/coin/4.1.png" />
+		<Unit filename="resource/coin/4.png" />
+		<Unit filename="resource/coin/5.1.png" />
+		<Unit filename="resource/coin/5.png" />
+		<Unit filename="resource/coin/6.1.png" />
+		<Unit filename="resource/coin/6.png" />
+		<Unit filename="resource/lazer/0.png" />
+		<Unit filename="resource/lazer/1.png" />
+		<Unit filename="resource/lazer/2.png" />
+		<Unit filename="resource/menu/pauseb.png" />
+		<Unit filename="resource/missles/1.png" />
+		<Unit filename="resource/missles/10.png" />
+		<Unit filename="resource/missles/11.png" />
+		<Unit filename="resource/missles/12.png" />
+		<Unit filename="resource/missles/1m.png" />
+		<Unit filename="resource/missles/1m1.png" />
+		<Unit filename="resource/missles/2.png" />
+		<Unit filename="resource/missles/2m.png" />
+		<Unit filename="resource/missles/2m2.png" />
+		<Unit filename="resource/missles/3.png" />
+		<Unit filename="resource/missles/4.png" />
+		<Unit filename="resource/missles/5.png" />
+		<Unit filename="resource/missles/6.png" />
+		<Unit filename="resource/missles/7.png" />
+		<Unit filename="resource/missles/8.png" />
+		<Unit filename="resource/missles/9.png" />
+		<Unit filename="resource/zappers/diagonal/d1.png" />
+		<Unit filename="resource/zappers/diagonal/d2.png" />
+		<Unit filename="resource/zappers/diagonal/d3.png" />
+		<Unit filename="resource/zappers/diagonal/d4.png" />
+		<Unit filename="resource/zappers/horizontal/h1.png" />
+		<Unit filename="resource/zappers/horizontal/h2.png" />
+		<Unit filename="resource/zappers/horizontal/h3.png" />
+		<Unit filename="resource/zappers/horizontal/h4.png" />
+		<Unit filename="resource/zappers/vertical/v1.png" />
+		<Unit filename="resource/zappers/vertical/v2.png" />
+		<Unit filename="resource/zappers/vertical/v3.png" />
+		<Unit filename="resource/zappers/vertical/v4.png" />
+		<Unit filename="source/background.cpp" />
+		<Unit filename="source/character.cpp" />
+		<Unit filename="source/coin.cpp" />
+		<Unit filename="source/game.cpp" />
+		<Unit filename="source/laser.cpp" />
+		<Unit filename="source/main.cpp" />
+		<Unit filename="source/menu.cpp" />
+		<Unit filename="source/missles.cpp" />
+		<Unit filename="source/zapper.cpp" />
+		<Unit filename="zlib1.dll" />
+		<Extensions>
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

@@ -1,4 +1,6 @@
+#include "../include/SBDL.hpp"
 #include "../include/game.hpp"
+#include "../include/sound.hpp"
 #include "../include/character.hpp"
 #include "../include/background.hpp"
 #include "../include/missles.hpp"
@@ -11,26 +13,100 @@
 SDL_Renderer* Game::renderer;
 const int Game::WINDOW_HEIGHT;
 const int Game::WINDOW_WIDTH;
-const int number_of_coin_on_line = 8;
-const int number_of_coin_on_row = 4;
 
 int Game::velocity;
 int Game::timer;
 int Game::total_coin;
 int Game::highscore;
+int Game::score_this_game = 0;
+int Game::coin_earn_this_game = 0;
+
+TTF_Font *score_font;
 
 Background* background;
-Character* character;
+Character* barry;
 Missles* missles;
 Zapper* zapper;
 Laser* laser;
-Coin* coin_base;
-Coin** coin;
 
 mt19937 rng(chrono::system_clock::now().time_since_epoch().count());
 
 int Game::Rand(int a, int b) {
     return uniform_int_distribution <int> (a, b) (rng);
+}
+
+Music *game_music;
+Sound *coin_sound, *missle_warning_sound, *laser_warning_sound;
+Sound *laser_fire_sound, *missle_lauch_sound;
+
+bool init_music() {
+    game_music = SBDL::loadMusic ("music.mp3");
+    Mix_PlayMusic (game_music, -1);
+
+    //SBDL::playMusic (game_music, -1);
+
+    coin_sound = SBDL::loadSound ("coin.wav");
+    missle_warning_sound = SBDL::loadSound ("missle_warning.wav");
+    laser_warning_sound = SBDL::loadSound ("laser_warning.wav");
+    missle_lauch_sound = SBDL::loadSound ("missle_launch.wav");
+    laser_fire_sound = SBDL::loadSound("laser_fire.wav");
+
+    return true;
+}
+
+bool play_sound (string s) {
+    if (s == "coin") SBDL::playSound(coin_sound, 1);
+    if (s == "missle_warning") SBDL::playSound(missle_warning_sound, 1);
+    if (s == "missle_launch") SBDL::playSound(missle_lauch_sound, 1);
+    if (s == "laser_warning") SBDL::playSound(laser_warning_sound, 1);
+    if (s == "laser_fire") SBDL::playSound(laser_fire_sound, 1);
+    return true;
+}
+
+void init_high_score() {
+    ifstream inp;
+    inp.open("highscore.txt");
+    inp >> Game::highscore;
+    inp.close();
+}
+
+void init_coin() {
+    ifstream inp;
+    inp.open("coin.txt");
+    inp >> Game::total_coin;
+    inp.close();
+}
+
+void score_add() {
+    ++ Game::score_this_game;
+    if (Game::score_this_game > Game::highscore) {
+        Game::highscore = Game::score_this_game;
+        ofstream out;
+        out.open ("highscore.txt");
+        out << Game::highscore << "\n";
+        out.close();
+    }
+}
+
+void coin_add() {
+    ++ Game::coin_earn_this_game;
+    ++ Game::total_coin;
+    ofstream out;
+    out.open ("coin.txt");
+    out << Game::total_coin << "\n";
+    out.close();
+}
+
+void show_score() {
+    Texture score_tex = SBDL::createFontTexture (score_font, "score : " + std::to_string(Game::score_this_game), 255, 255, 255);
+    SBDL::showTexture (score_tex, 0, 0);
+    SBDL::freeTexture (score_tex);
+}
+
+void show_coin() {
+    Texture score_tex = SBDL::createFontTexture (score_font, "coin : " + std::to_string(Game::coin_earn_this_game), 255, 255, 255);
+    SBDL::showTexture (score_tex, 0, 50);
+    SBDL::freeTexture (score_tex);
 }
 
 void Game::init() {
@@ -43,39 +119,32 @@ void Game::init() {
     );
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    SBDL::Core::renderer = renderer;
+
+    SDL_SetHint (SDL_HINT_RENDER_SCALE_QUALITY, "linear"); // make scaled rendering smoother
 
     velocity = 20;
     timer = 0;
     coin_earn_this_game = 0;
     score_this_game = 0;
-    
-    ifstream inp;
-    inp.open("highscore.txt");
-    inp >> highscore;
-    inp.close();
 
-    inp.open("coin.txt");
-    inp >> total_coin;
-    inp.close();
+    init_high_score();
+    init_coin();
 
     background = new Background;
-    character = new Character;
+    barry = new Character;
     missles = new Missles();
     zapper = new Zapper(rand() % 3 + 1);
     laser = new Laser();
-    coin_base = new Coin();
 
-    coin = new Coin* [number_of_coin_on_row];
-    for (int i = 0; i < number_of_coin_on_row; ++i) 
-        coin[i] = new Coin[number_of_coin_on_line];
+    load_coin_texture();
+    restart_coins();
 
-    for (int i = 0; i < number_of_coin_on_row; ++i)
-        for (int j = 0; j < number_of_coin_on_line; ++j) {
-            coin[i][j].w = 30;
-            coin[i][j].h = 30;
-            coin[i][j].y = coin_base->y + i * 30;
-            coin[i][j].x = coin_base->x + j * 30;
-        }
+    TTF_Init();
+    score_font = SBDL::loadFont("Jetpackia.ttf", 30);
+
+    Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 1024 );
+    init_music();
 }
 
 void Game::close() {
@@ -88,23 +157,18 @@ void Game::close() {
     delete background;
     background = NULL;
 
-    delete character;
-    character = NULL;
-    
+    delete barry;
+    barry = NULL;
+
     delete zapper;
     zapper = NULL;
-    
+
     delete missles;
     missles = NULL;
 
     delete laser;
     laser = NULL;
 
-    delete coin_base;
-    coin_base = NULL;
-
-    delete [] coin;
-        
     IMG_Quit();
     SDL_Quit();
 }
@@ -116,17 +180,17 @@ void Game::handle_event() {
             case SDL_QUIT:
                 game_over = true;
                 break;
-            
+
             case SDL_KEYDOWN:
                 switch(e.key.keysym.sym) {
                     case SDLK_ESCAPE:
                         game_over = true;
                         break;
                     case SDLK_SPACE:
-                        if (character->on_ground()) 
-                            character->state = "jumping";
-                        else 
-                            character->state = "flying";
+                        if (barry->on_ground())
+                            barry->state = "jumping";
+                        else
+                            barry->state = "flying";
                         break;
                     case SDLK_p:
                         pause = true;
@@ -138,70 +202,72 @@ void Game::handle_event() {
                 break;
         }
     }
+
+    SBDL::updateEvents();
+
+    if (SBDL::keyHold(SDL_SCANCODE_SPACE))
+        barry->state = "flying";
+
+    if (SBDL::keyRelease(SDL_SCANCODE_SPACE))
+        barry->state = "normal";
 }
 
-bool Game::is_running() { 
-    if (laser->y < character->y && character->y < laser->y + laser->h - 20 && laser->state == "beaming") {
+bool Game::is_running() {
+    if (laser->y < barry->y && barry->y < laser->y + laser->h - 20 && laser->state == "beaming") {
         Game::game_over = true;
     }
 
-    if (max(character->x, missles->x) < min(character->x + character->w, missles->x + missles->w) - 15)
-        if (max(character->y, missles->y) < min(character->y + character->h, missles->y + missles->h) - 15)
+    if (max(barry->x, missles->x) < min(barry->x + barry->w, missles->x + missles->w) - 15)
+        if (max(barry->y, missles->y) < min(barry->y + barry->h, missles->y + missles->h) - 15)
             Game::game_over = true;
 
-    if (max(character->x, zapper->x) < min(character->x + character->w, zapper->x + zapper->w) - 30)
-        if (max(character->y, zapper->y) < min(character->y + character->h, zapper->y + zapper->h) - 30)
+    if (max(barry->x, zapper->x) < min(barry->x + barry->w, zapper->x + zapper->w) - 30)
+        if (max(barry->y, zapper->y) < min(barry->y + barry->h, zapper->y + zapper->h) - 30)
             Game::game_over = true;
 
-    return game_over == false; 
+    return game_over == false;
 }
 
 void Game::update() {
     if (pause)
         return;
-    ++ timer;
-    ++ score_this_game;
 
-    highscore = max(highscore, score_this_game);
+    score_add();
 
-    character->update();
+    barry->update();
     missles->update();
     zapper->update();
-    coin_base->update();
+    move_coin();
 
-    for (int i = 0; i < number_of_coin_on_row; ++i)
-        for (int j = 0; j < number_of_coin_on_line; ++j) {
-            if (coin_base->x == Game::WINDOW_WIDTH)
-                coin[i][j].coin_exist = true;
+    for (int i = 0; i < coins_height; ++i)
+        for (int j = 0; j < coins_width; ++j) {
+            if (!coins[i][j].show)
+                continue;
+            SDL_Rect render_quad = {coins[i][j].x, coins[i][j].y, coin_tex[0].width, coin_tex[0].height};
 
-            coin[i][j].y = coin_base->y + i * 30;
-            coin[i][j].x = coin_base->x + j * 30;
-
-            if (max(character->x, coin[i][j].x) < min(character->x + character->w, coin[i][j].x + coin[i][j].w))
-                if (max(character->y, coin[i][j].y) < min(character->y + character->h, coin[i][j].y + coin[i][j].h)) {
-                    ++ coin_earn_this_game;
-                    ++ total_coin;
-                    coin[i][j].coin_exist = false;
-                }
+            if (SBDL::hasIntersectionRect(barry->render_quad, render_quad)) {
+                coin_add();
+                coins[i][j].show = false;
+                play_sound ("coin");
+            }
         }
-}      
+}
 
 void Game::render() {
-    if (pause) 
+    if (pause)
         return;
     SDL_RenderClear(renderer);
 
     background->render();
-    
 
-    character->render();
+    barry->render();
     zapper->render();
     missles->render();
     laser->render();
-    
-    for (int i = 0; i < number_of_coin_on_row; ++i)
-        for (int j = 0; j < number_of_coin_on_line; ++j)
-            coin[i][j].render();
+    show_coin_texture();
+
+    show_score();
+    show_coin();
 
     SDL_RenderPresent(Game::renderer);
 }

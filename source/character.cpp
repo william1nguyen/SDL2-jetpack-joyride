@@ -47,18 +47,18 @@ void Character::update() {
     }  else if (state == "flying") {
         flying();
     } else {
-        if (on_ground()) 
+        if (on_ground())
             running();
-        else  
+        else
             landing();
     }
 }
 
 void Character::render() {
     render_quad = {x, y, w, h};
-    if(texture != nullptr) 
-        texture = nullptr;
-        
+    if(texture != NULL)
+        texture = NULL;
+
     texture = IMG_LoadTexture(Game::renderer, path[current_frame].c_str());
     SDL_RenderCopy(Game::renderer, texture, NULL, &render_quad);
 
@@ -98,7 +98,7 @@ void Character::flying() {
 }
 
 void Character::landing() {
-    y = (!on_ground()) ? y + Game::velocity / 2 : y;
+    y = (on_ground()) ? y : min(y + Game::velocity, ground - h);
     frame_size = character_landing_frame_size;
     if (path != character_landing_path) {
         path = character_landing_path;

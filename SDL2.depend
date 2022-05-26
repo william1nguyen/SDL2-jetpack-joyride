@@ -1,0 +1,90 @@
+# depslib dependency file v1.0
+1653230684 source:c:\users\bbb\desktop\sdl2\main.cpp
+	<SDL.h>
+
+1653587382 source:c:\users\bbb\desktop\sdl2\source\character.cpp
+	"../include/character.hpp"
+	"../include/game.hpp"
+
+1653234626 c:\users\bbb\desktop\sdl2\include\character.hpp
+	"library.hpp"
+
+1653267827 c:\users\bbb\desktop\sdl2\include\library.hpp
+	<SDL.h>
+	<SDL_image.h>
+	<SDL_timer.h>
+	<iostream>
+	<stdio.h>
+	<cmath>
+	<string>
+	<vector>
+	<random>
+	<chrono>
+
+1653579467 c:\users\bbb\desktop\sdl2\include\game.hpp
+	"library.hpp"
+	<time.h>
+
+1653590813 source:c:\users\bbb\desktop\sdl2\source\coin.cpp
+
+1653593133 c:\users\bbb\desktop\sdl2\include\coin.hpp
+
+1653593567 source:c:\users\bbb\desktop\sdl2\source\game.cpp
+	"../include/SBDL.hpp"
+	"../include/game.hpp"
+	"../include/sound.hpp"
+	"../include/character.hpp"
+	"../include/background.hpp"
+	"../include/missles.hpp"
+	"../include/zapper.hpp"
+	"../include/laser.hpp"
+	"../include/coin.hpp"
+	<fstream>
+
+1653234626 c:\users\bbb\desktop\sdl2\include\background.hpp
+	"library.hpp"
+
+1653576286 c:\users\bbb\desktop\sdl2\include\missles.hpp
+	"library.hpp"
+
+1653576328 c:\users\bbb\desktop\sdl2\include\zapper.hpp
+	"library.hpp"
+
+1653576024 c:\users\bbb\desktop\sdl2\include\laser.hpp
+	"library.hpp"
+
+1653583006 source:c:\users\bbb\desktop\sdl2\source\laser.cpp
+	"../include/laser.hpp"
+	"../include/game.hpp"
+
+1653592486 source:c:\users\bbb\desktop\sdl2\source\main.cpp
+	"../include/game.hpp"
+	<fstream>
+
+1653234626 source:c:\users\bbb\desktop\sdl2\source\menu.cpp
+
+1653576301 source:c:\users\bbb\desktop\sdl2\source\missles.cpp
+	"../include/missles.hpp"
+	"../include/game.hpp"
+
+1653576336 source:c:\users\bbb\desktop\sdl2\source\zapper.cpp
+	"../include/zapper.hpp"
+	"../include/game.hpp"
+
+1653585929 source:c:\users\bbb\desktop\sdl2\source\background.cpp
+	"../include/background.hpp"
+	"../include/game.hpp"
+
+1653593549 c:\users\bbb\desktop\sdl2\include\sbdl.hpp
+	<SDL.h>
+	<SDL_image.h>
+	<SDL_ttf.h>
+	<SDL_mixer.h>
+	<iostream>
+	<stdio.h>
+	<algorithm>
+	<vector>
+	<string>
+
+1653586152 c:\users\bbb\desktop\sdl2\include\sound.hpp
+
