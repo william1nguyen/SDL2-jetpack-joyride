@@ -10,7 +10,8 @@ struct Laser {
     int h;
 
     int frame_size = 0;
-    string state = "";
+    string state = "warning";
+    string pre_state = "warning";
 
     Laser();
     ~Laser();

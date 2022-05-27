@@ -25,6 +25,7 @@ struct Game {
     void init();
     void handle_event();
     bool is_running();
+    void game_restart();
     void update();
     void render();
     void close();

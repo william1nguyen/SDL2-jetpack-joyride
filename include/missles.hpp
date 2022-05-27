@@ -10,6 +10,7 @@ struct Missles {
     int h;
     int id;
 
+    string state = "normal";
     int frame_size = 0;
 
     Missles();

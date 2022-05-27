@@ -2,6 +2,7 @@
 #include "../include/game.hpp"
 
 const int missles_frame_size = 24;
+
 const string missles_path[] = {
     "resource/missles/1m.png",
     "resource/missles/1m1.png",
@@ -47,23 +48,33 @@ Missles::~Missles() {
 }
 
 void Missles::update() {
-    if (current_frame <= 12)
+    if (state == "normal")
         return;
+    if (current_frame <= 12) {
+        state = "warning";
+        return;
+    } else
+        state = "launch";
     x -= Game::velocity;
     if (x < -w) {
         x = Game::WINDOW_WIDTH - w;
         y = Game::Rand(0, Game::WINDOW_HEIGHT - h);
+        state = "normal";
         current_frame = 0;
     }
 }
 
 void Missles::render() {
+    if (state == "normal")
+        return;
     render_quad = {x, y, w, h};
     texture = IMG_LoadTexture(Game::renderer, missles_path[current_frame].c_str());
     SDL_RenderCopy(Game::renderer, texture, NULL, &render_quad);
 
     SDL_DestroyTexture(texture);
     texture = NULL;
+
+    state = "launch";
 
     ++ current_frame;
     if (current_frame == frame_size)

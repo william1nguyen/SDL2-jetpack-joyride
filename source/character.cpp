@@ -28,7 +28,7 @@ string character_landing_path[] = {
     "resource/character/landing/landing_1.png",
 };
 
-const int ground = Game::WINDOW_HEIGHT - 20;
+const int ground = Game::WINDOW_HEIGHT;
 
 Character::Character() {
     path = new string[frame_size];

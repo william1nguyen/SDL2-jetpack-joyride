@@ -7,6 +7,7 @@
 #include "../include/zapper.hpp"
 #include "../include/laser.hpp"
 #include "../include/coin.hpp"
+#include "../include/menu.hpp"
 
 #include <fstream>
 
@@ -20,10 +21,10 @@ int Game::total_coin;
 int Game::highscore;
 int Game::score_this_game = 0;
 int Game::coin_earn_this_game = 0;
+bool temporary_lose = false;
 
 TTF_Font *score_font;
 
-Background* background;
 Character* barry;
 Missles* missles;
 Zapper* zapper;
@@ -37,18 +38,17 @@ int Game::Rand(int a, int b) {
 
 Music *game_music;
 Sound *coin_sound, *missle_warning_sound, *laser_warning_sound;
-Sound *laser_fire_sound, *missle_lauch_sound;
+Sound *laser_fire_sound, *missle_launch_sound;
 
 bool init_music() {
     game_music = SBDL::loadMusic ("music.mp3");
-    Mix_PlayMusic (game_music, -1);
 
-    //SBDL::playMusic (game_music, -1);
+    SBDL::playMusic (game_music, -1);
 
     coin_sound = SBDL::loadSound ("coin.wav");
-    missle_warning_sound = SBDL::loadSound ("missle_warning.wav");
+    missle_warning_sound = SBDL::loadSound ("missile_warning.wav");
     laser_warning_sound = SBDL::loadSound ("laser_warning.wav");
-    missle_lauch_sound = SBDL::loadSound ("missle_launch.wav");
+    missle_launch_sound = SBDL::loadSound ("missile_launch.wav");
     laser_fire_sound = SBDL::loadSound("laser_fire.wav");
 
     return true;
@@ -56,8 +56,8 @@ bool init_music() {
 
 bool play_sound (string s) {
     if (s == "coin") SBDL::playSound(coin_sound, 1);
-    if (s == "missle_warning") SBDL::playSound(missle_warning_sound, 1);
-    if (s == "missle_launch") SBDL::playSound(missle_lauch_sound, 1);
+    if (s == "missles_warning") SBDL::playSound(missle_warning_sound, 1);
+    if (s == "missles_launch") SBDL::playSound(missle_launch_sound, 1);
     if (s == "laser_warning") SBDL::playSound(laser_warning_sound, 1);
     if (s == "laser_fire") SBDL::playSound(laser_fire_sound, 1);
     return true;
@@ -103,10 +103,36 @@ void show_score() {
     SBDL::freeTexture (score_tex);
 }
 
+void show_high_score() {
+    if (temporary_lose) {
+        Texture score_tex = SBDL::createFontTexture (score_font, "high score : " + std::to_string(Game::highscore), 255, 255, 255);
+        SBDL::showTexture (score_tex, 300, 100);
+        SBDL::freeTexture (score_tex);
+        return;
+    }
+}
+
 void show_coin() {
-    Texture score_tex = SBDL::createFontTexture (score_font, "coin : " + std::to_string(Game::coin_earn_this_game), 255, 255, 255);
-    SBDL::showTexture (score_tex, 0, 50);
-    SBDL::freeTexture (score_tex);
+    Texture coin_tex = SBDL::createFontTexture (score_font, "coin : " + std::to_string(Game::coin_earn_this_game), 255, 255, 255);
+    SBDL::showTexture (coin_tex, 0, 50);
+    SBDL::freeTexture (coin_tex);
+}
+
+void show_total_coin() {
+    if (temporary_lose) {
+        Texture coin_tex = SBDL::createFontTexture (score_font, "total coin : " + std::to_string(Game::total_coin), 255, 255, 255);
+        SBDL::showTexture (coin_tex, 300, 150);
+        SBDL::freeTexture (coin_tex);
+        return;
+    }
+}
+
+void show_message() {
+    if (temporary_lose) {
+        Texture msg_tex = SBDL::createFontTexture (score_font, "Press R to restart or Q to quit", 255, 255, 255);
+        SBDL::showTexture (msg_tex, 200, 300);
+        SBDL::freeTexture (msg_tex);
+    }
 }
 
 void Game::init() {
@@ -123,7 +149,7 @@ void Game::init() {
 
     SDL_SetHint (SDL_HINT_RENDER_SCALE_QUALITY, "linear"); // make scaled rendering smoother
 
-    velocity = 20;
+    velocity = 10;
     timer = 0;
     coin_earn_this_game = 0;
     score_this_game = 0;
@@ -131,7 +157,8 @@ void Game::init() {
     init_high_score();
     init_coin();
 
-    background = new Background;
+    load_background_texture();
+
     barry = new Character;
     missles = new Missles();
     zapper = new Zapper(rand() % 3 + 1);
@@ -143,7 +170,28 @@ void Game::init() {
     TTF_Init();
     score_font = SBDL::loadFont("Jetpackia.ttf", 30);
 
-    Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 1024 );
+    Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 1024 ); // init SDL_Mixer
+    init_music();
+}
+
+void Game::game_restart() {
+    game_over = temporary_lose = false;
+    velocity = 10;
+    timer = 0;
+    coin_earn_this_game = 0;
+    score_this_game = 0;
+
+    first_x = 0;
+    came_x = 0;
+
+    barry = new Character;
+    missles = new Missles();
+    zapper = new Zapper(rand() % 3 + 1);
+    laser = new Laser();
+
+    load_coin_texture();
+    restart_coins();
+
     init_music();
 }
 
@@ -153,9 +201,6 @@ void Game::close() {
 
     SDL_DestroyRenderer(renderer);
     renderer = NULL;
-
-    delete background;
-    background = NULL;
 
     delete barry;
     barry = NULL;
@@ -198,6 +243,12 @@ void Game::handle_event() {
                     case SDLK_c:
                         pause = false;
                         break;
+                    case SDLK_q:
+                        game_over = true;
+                        break;
+                    case SDLK_r:
+                        game_restart();
+                        break;
                 }
                 break;
         }
@@ -205,34 +256,39 @@ void Game::handle_event() {
 
     SBDL::updateEvents();
 
-    if (SBDL::keyHold(SDL_SCANCODE_SPACE))
+    // Do SDL_KEYDOWN khong the giu key duoc khi barry jump nen ta dung keyHold()
+
+    if (SBDL::keyHold(SDL_SCANCODE_SPACE)) // hold key
         barry->state = "flying";
 
-    if (SBDL::keyRelease(SDL_SCANCODE_SPACE))
+    if (SBDL::keyRelease(SDL_SCANCODE_SPACE)) // not hold key anymore
         barry->state = "normal";
 }
 
 bool Game::is_running() {
     if (laser->y < barry->y && barry->y < laser->y + laser->h - 20 && laser->state == "beaming") {
-        Game::game_over = true;
+        temporary_lose = true;
     }
 
     if (max(barry->x, missles->x) < min(barry->x + barry->w, missles->x + missles->w) - 15)
         if (max(barry->y, missles->y) < min(barry->y + barry->h, missles->y + missles->h) - 15)
-            Game::game_over = true;
+            temporary_lose = true;
 
     if (max(barry->x, zapper->x) < min(barry->x + barry->w, zapper->x + zapper->w) - 30)
         if (max(barry->y, zapper->y) < min(barry->y + barry->h, zapper->y + zapper->h) - 30)
-            Game::game_over = true;
+            temporary_lose = true;
 
     return game_over == false;
 }
 
 void Game::update() {
-    if (pause)
+    if (pause || temporary_lose) {
+        SBDL::stopAllSound();
         return;
+    }
 
     score_add();
+    ++ timer;
 
     barry->update();
     missles->update();
@@ -251,19 +307,47 @@ void Game::update() {
                 play_sound ("coin");
             }
         }
+
+    if (timer % 158 == 0)
+        missles->state = "warning";
+    if (timer % 312 == 0)
+        laser->state = "fire";
 }
 
 void Game::render() {
-    if (pause)
+    // load menu when lose
+    if (pause || temporary_lose) {
+        Texture lose_background = SBDL::loadTexture("resource/menu/pauseb.png");
+        SBDL::showTexture(lose_background, 0, 0);
+    }
+    show_high_score();
+    show_total_coin();
+    show_message();
+
+    SBDL::updateRenderClear();
+
+    if (pause || temporary_lose)
         return;
     SDL_RenderClear(renderer);
 
-    background->render();
+    show_background();
 
     barry->render();
     zapper->render();
-    missles->render();
+
+    if (missles->state != "normal") {
+        missles->render();
+    }
+
     laser->render();
+    if (laser->state == "warning") {
+        SBDL::stopAllSound();
+        play_sound ("laser_warning");
+    } else {
+        SBDL::stopAllSound();
+        play_sound ("laser_fire");
+    }
+
     show_coin_texture();
 
     show_score();

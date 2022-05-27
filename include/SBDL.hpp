@@ -100,49 +100,6 @@ namespace SBDL {
 		if (keyPressed(SDL_SCANCODE_ESCAPE)) {
 			Core::running = false;
 		}
-
-		// reset event handler state for check it again
-		Core::event = {};
-
-		// returns true if there is an event in the queue, but will not remove it
-		if (!SDL_PollEvent(nullptr)) {
-			Mouse.left = Mouse.middle = Mouse.right = false;
-			Mouse.button = 0;
-			return;
-		}
-		while (SDL_PollEvent(&Core::event)) { // loop until there is a new event for handling
-			if (Core::event.type == SDL_MOUSEBUTTONDOWN || Core::event.type == SDL_MOUSEBUTTONUP) {
-				// update state of Mouse structure if it was changed
-				switch (Core::event.button.button) {
-				case 1:
-					Mouse.left = true;
-					Mouse.right = Mouse.middle = false;
-					break;
-				case 2:
-					Mouse.middle = true;
-					Mouse.right = Mouse.left = false;
-					break;
-				case 3:
-					Mouse.right = true;
-					Mouse.left = Mouse.middle = false;
-					break;
-				default:
-					Mouse.left = Mouse.middle = Mouse.right = false;
-				}
-
-				Mouse.state = Core::event.button.state;
-				Mouse.button = Core::event.button.button;
-				Mouse.clicks = Core::event.button.clicks;
-			}
-			// update position of mouse if it was changed
-			if (Core::event.type == SDL_MOUSEMOTION) {
-				Mouse.x = Core::event.motion.x;
-				Mouse.y = Core::event.motion.y;
-			}
-			if (Core::event.type == SDL_QUIT) {
-				Core::running = false;
-			}
-		}
 	}
 
     unsigned int getTime() {
