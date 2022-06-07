@@ -7,7 +7,7 @@ Game: Jetpack joyride
 Nội dung game : Né các chướng ngại vật và chạy được càng lâu càng tốt
 
 Video demo: 
-https://drive.google.com/file/d/14CmS4Gn666EB7c7w9fSZVti58MEKZcJZ/view?usp=sharing
+https://youtu.be/OVVfBVt10Pw
 
 Công nghệ sử dụng :
 - IDE: Codeblocks 20.03
