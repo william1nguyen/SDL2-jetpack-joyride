@@ -1,15 +1,27 @@
-Game: Jetpack joyride
+## Jetpack joyride
 
-Nội dung game : Né các chướng ngại vật và chạy được càng lâu càng tốt
-
-Công nghệ sử dụng :
+#### Architectures
 - IDE: Codeblocks 20.03
-- Thư viện : SDL2 SDL2_image SDL2_ttf SDL2_mixer
+- Libraries : SDL2 SDL2_image SDL2_ttf SDL2_mixer
 
-Cách chơi: 
-Dùng các phím tắt:
-- space : dùng để nhảy tránh chướng ngại vật
-- p : dừng trò chơi lại, mọi trạng thái vẫn được lưu
-- c : để tiếp tục trò chơi sau khi dừng
-- r : để bắt đầu trò chơi lại từ đầu (restart) 
-- q : để thoát khỏi trò chơi
+#### How to play ?
+- Try to avoid all obstacles and run as long as possible.
+
+Shortcuts:
+- space : jump
+- p : stop the game, every game states are stored in a txt file.
+- c : continue the game, and load the game states.
+- r : restart
+- q : quit
+
+#### How to run
+- Clone the project
+```
+$ git clone https://github.com/natalieconan/jetpack-joyride.git
+```
+
+- Install and setup SDL Libraries.
+- Goto `source/` directory and run the main programme.
+```
+$ g++ main.cpp -o main && ./main
+```
