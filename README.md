@@ -1,10 +1,10 @@
 ## Jetpack joyride
 
 #### Main Screen
-![alt text](image.png)
+![alt text](demo/image.png)
 
 #### Play Screen
-![alt text](image-1.png)
+![alt text](demo/image-1.png)
 
 ### Architectures
 - IDE: Codeblocks 20.03
